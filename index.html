@@ -3,135 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bypass Master - Link Final Direto</title>
+    <title>Bypass - Mostra Link Final Direto</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; }
-        .hero { background: url('https://source.unsplash.com/random/1920x1080/?cyber,hacker') center/cover; }
+        body { background: linear-gradient(to bottom, #111827, #1f2937); color: #e5e7eb; }
     </style>
 </head>
-<body class="min-h-screen font-sans antialiased">
-    <nav class="bg-black/70 backdrop-blur-md p-4 sticky top-0 z-10">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-emerald-400">Bypass Master 2.0</h1>
-            <p class="text-sm text-gray-400">Pega o link final de uma vez (WileyWales, Eusoupet...)</p>
-        </div>
-    </nav>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="w-full max-w-3xl bg-gray-800/80 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-gray-700">
+        <h1 class="text-4xl font-bold text-center text-emerald-400 mb-8">Bypass Link Final</h1>
+        <p class="text-center text-lg mb-6">Cole o link protegido (wileywales, eusoupet, linkvertise...) → clica → mostro o link final (Mediafire, etc.)</p>
 
-    <div class="hero py-24 text-center">
-        <div class="max-w-4xl mx-auto px-6">
-            <h2 class="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight">Quero só o link final!</h2>
-            <p class="text-xl md:text-2xl mb-10 opacity-90">Cole o link protegido → clica → mostro o link que a pessoa realmente colocou no final.</p>
-            
-            <div class="bg-black/60 backdrop-blur-lg p-8 md:p-10 rounded-3xl shadow-2xl border border-emerald-500/30">
-                <input id="urlInput" type="url" placeholder="https://wileywales.com/10262-2/ ou qualquer encurtador chato" 
-                       class="w-full p-5 rounded-2xl bg-gray-900/80 text-white placeholder-gray-400 border border-gray-700 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/50 text-lg mb-6">
-                
-                <button onclick="getFinalLink()" 
-                        class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-black text-2xl py-7 rounded-2xl transition-all duration-300 active:scale-95 shadow-lg">
-                    BYPASS AGORA! → MOSTRAR LINK FINAL
-                </button>
-            </div>
-        </div>
-    </div>
+        <input id="urlInput" type="url" placeholder="https://wileywales.com/10262-2/ ou qualquer encurtador"
+               class="w-full p-5 rounded-xl bg-gray-900 border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 mb-6 text-lg">
 
-    <div class="max-w-5xl mx-auto px-6 py-16">
-        <div id="result" class="hidden bg-gradient-to-br from-emerald-900/40 to-teal-900/40 p-10 rounded-3xl text-center border border-emerald-500/20 mb-12 backdrop-blur-sm">
-            <!-- Aqui aparece o resultado -->
-        </div>
+        <button onclick="extrairLinkFinal()"
+                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xl py-5 rounded-xl transition active:scale-95">
+            MOSTRAR LINK FINAL AGORA
+        </button>
 
-        <div class="text-center text-sm text-gray-500 mt-20">
-            Funciona melhor em WileyWales, Eusoupet e similares que já mostram o link no HTML.<br>
-            Se não achar, abre a página normal e você clica manualmente (mas quase sempre acha!).
+        <div id="resultado" class="mt-10 p-6 bg-gray-900/70 rounded-xl border border-gray-600 min-h-[150px] text-center">
+            <p class="text-gray-400">O link final vai aparecer aqui (Mediafire, Mega, Drive...)</p>
         </div>
     </div>
 
     <script>
-        async function getFinalLink() {
+        async function extrairLinkFinal() {
             const input = document.getElementById('urlInput');
             const url = input.value.trim();
-            const resultDiv = document.getElementById('result');
+            const resultado = document.getElementById('resultado');
 
             if (!url) {
-                alert("Cole um link primeiro, vai!");
+                resultado.innerHTML = '<p class="text-yellow-400 text-xl">Cole um link primeiro!</p>';
                 return;
             }
 
-            resultDiv.classList.remove('hidden');
-            resultDiv.innerHTML = `<p class="text-xl text-emerald-300 animate-pulse">Buscando o link final...</p>`;
+            resultado.innerHTML = '<p class="text-emerald-400 text-xl animate-pulse">Buscando link final...</p>';
 
             try {
-                // Abre a página original em nova aba (como você queria)
+                // Abre a página original em nova aba (pra você ver/clicar se precisar)
                 window.open(url, '_blank');
 
-                // Tenta pegar o conteúdo e extrair link final
-                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-                const response = await fetch(proxyUrl);
-                
-                if (!response.ok) throw new Error("Não consegui acessar a página");
+                // Usa proxy grátis pra pegar o HTML (evita CORS)
+                const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+                const response = await fetch(proxy);
+                if (!response.ok) throw new Error('Não consegui carregar a página');
 
                 const html = await response.text();
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
 
-                // Estratégias para achar o link final (prioridade alta → baixa)
-                let finalLink = null;
+                let linkFinal = null;
+                const possiveis = [];
 
-                // 1. Procura <a> com texto tipo "DOWNLOAD", "CLIQUE AQUI", "CONTINUAR", "LINK"
-                const candidates = doc.querySelectorAll('a');
-                for (const a of candidates) {
-                    const text = (a.textContent || '').toLowerCase().trim();
+                // Procura TODOS os <a href> e filtra os mais prováveis
+                doc.querySelectorAll('a[href]').forEach(a => {
                     const href = a.href;
-                    if (!href) continue;
+                    const texto = (a.textContent || a.innerText || '').toLowerCase().trim();
 
-                    if (
-                        text.includes('download') || 
-                        text.includes('clique aqui') || 
-                        text.includes('continuar') || 
-                        text.includes('link') || 
-                        text.includes('aqui') ||
-                        href.includes('http') && !href.includes('wileywales.com') && !href.includes('eusoupet.com')
-                    ) {
-                        finalLink = href;
-                        break;
-                    }
-                }
+                    if (href && href.startsWith('http') && 
+                        !href.includes('wileywales.com') && 
+                        !href.includes('eusoupet.com') && 
+                        !href.includes(window.location.hostname)) {
 
-                // 2. Se não achou, pega qualquer <a> externo que não seja do próprio site
-                if (!finalLink) {
-                    for (const a of candidates) {
-                        const href = a.href;
-                        if (href.startsWith('http') && 
-                            !href.includes(window.location.hostname) &&
-                            !href.includes('wileywales.com') &&
-                            !href.includes('eusoupet.com')) {
-                            finalLink = href;
-                            break;
+                        // Prioridade alta: hosts de download comuns
+                        if (href.includes('mediafire.com') || 
+                            href.includes('mega.nz') || 
+                            href.includes('drive.google.com') || 
+                            href.includes('dropbox.com') || 
+                            href.includes('1fichier.com') ||
+                            texto.includes('download') || texto.includes('mediafire') || texto.includes('mega') ||
+                            texto.includes('clique aqui') || texto.includes('baixar') || texto.includes('continuar')) {
+                            linkFinal = href; // Achou um forte candidato → para aqui
+                            return;
                         }
+
+                        // Senão, guarda como possível
+                        possiveis.push({ href, texto });
                     }
+                });
+
+                // Se não achou prioridade alta, pega o primeiro externo razoável
+                if (!linkFinal && possiveis.length > 0) {
+                    linkFinal = possiveis[0].href;
                 }
 
-                // Mostra resultado
-                if (finalLink) {
-                    resultDiv.innerHTML = `
-                        <p class="text-3xl font-bold text-emerald-400 mb-6">✅ LINK FINAL ENCONTRADO!</p>
-                        <a href="${finalLink}" target="_blank" class="inline-block bg-black/50 hover:bg-black/70 text-emerald-300 font-mono p-5 rounded-2xl border border-emerald-500/40 break-all transition">
-                            ${finalLink}
+                if (linkFinal) {
+                    resultado.innerHTML = `
+                        <p class="text-2xl font-bold text-emerald-400 mb-4">✅ LINK FINAL ENCONTRADO!</p>
+                        <a href="${linkFinal}" target="_blank" class="block bg-gray-800 p-5 rounded-xl text-emerald-300 hover:text-emerald-200 break-all font-mono border border-emerald-600/50">
+                            ${linkFinal}
                         </a>
-                        <p class="mt-6 text-lg text-gray-300">Clique acima ou já abri a página original em outra aba.</p>
+                        <p class="mt-4 text-gray-300">Clique acima pra ir direto (ou use a aba que abri).</p>
                     `;
                 } else {
-                    resultDiv.innerHTML = `
-                        <p class="text-2xl font-bold text-yellow-400 mb-4">Link final não detectado automaticamente 😕</p>
-                        <p class="text-lg">Mas já abri a página em outra aba pra você. Procure por "DOWNLOAD" ou "CLIQUE AQUI" lá.</p>
+                    resultado.innerHTML = `
+                        <p class="text-2xl font-bold text-yellow-400 mb-4">Não encontrei link final automático 😕</p>
+                        <p class="text-lg">A página não mostra o link (provavelmente precisa clicar em anúncio ou ver vídeo primeiro).</p>
+                        <p class="mt-3 text-gray-400">Já abri a página em outra aba → procure por "Mediafire", "Download" ou botão verde lá.</p>
                     `;
                 }
 
             } catch (err) {
-                resultDiv.innerHTML = `
-                    <p class="text-2xl font-bold text-red-400 mb-4">Erro ao tentar extrair</p>
-                    <p class="text-lg">Já abri o link em outra aba. Tente clicar manualmente no botão/anúncio lá.</p>
-                    <p class="text-sm mt-4 text-gray-400">Erro: ${err.message}</p>
+                resultado.innerHTML = `
+                    <p class="text-2xl font-bold text-red-400 mb-4">Erro ao buscar</p>
+                    <p class="text-lg">Já abri o link em outra aba. Tente clicar manualmente no anúncio/vídeo.</p>
+                    <p class="text-sm mt-3 text-gray-500">Detalhe: ${err.message}</p>
                 `;
             }
         }
