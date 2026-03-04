@@ -3,112 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bypass - Mostra Link Final Direto</title>
+    <title>Bypass - Detecta só Link Mediafire Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: linear-gradient(to bottom, #111827, #1f2937); color: #e5e7eb; }
+        body { background: linear-gradient(to bottom, #0f172a, #1e293b); color: #e5e7eb; font-family: system-ui, sans-serif; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-6">
-    <div class="w-full max-w-3xl bg-gray-800/80 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-gray-700">
-        <h1 class="text-4xl font-bold text-center text-emerald-400 mb-8">Bypass Link Final</h1>
-        <p class="text-center text-lg mb-6">Cole o link protegido (wileywales, eusoupet, linkvertise...) → clica → mostro o link final (Mediafire, etc.)</p>
+    <div class="w-full max-w-4xl bg-gray-900/80 backdrop-blur-lg p-10 rounded-3xl shadow-2xl border border-emerald-700/50">
+        <h1 class="text-4xl font-bold text-center text-emerald-400 mb-6">Bypass só Link Final Mediafire</h1>
+        <p class="text-center text-lg mb-8">Cole o link → clica → mostro APENAS se tiver um https://www.mediafire.com/... no final da página (nada mais!)</p>
 
-        <input id="urlInput" type="url" placeholder="https://wileywales.com/10262-2/ ou qualquer encurtador"
-               class="w-full p-5 rounded-xl bg-gray-900 border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 mb-6 text-lg">
+        <input id="urlInput" type="url" placeholder="https://wileywales.com/10262-2/ ou outro encurtador"
+               class="w-full p-6 rounded-2xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/50 text-xl mb-6">
 
-        <button onclick="extrairLinkFinal()"
-                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xl py-5 rounded-xl transition active:scale-95">
-            MOSTRAR LINK FINAL AGORA
+        <button onclick="detectarMediafireFinal()"
+                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-2xl py-6 rounded-2xl transition active:scale-95 shadow-lg">
+            DETECTAR LINK MEDIAFIRE FINAL
         </button>
 
-        <div id="resultado" class="mt-10 p-6 bg-gray-900/70 rounded-xl border border-gray-600 min-h-[150px] text-center">
-            <p class="text-gray-400">O link final vai aparecer aqui (Mediafire, Mega, Drive...)</p>
+        <div id="resultado" class="mt-12 p-8 bg-gray-800/70 rounded-2xl border border-gray-700 min-h-[220px] text-center">
+            <p class="text-gray-400 text-lg">Aqui aparece SOMENTE o link https://www.mediafire.com/... se existir na página.</p>
         </div>
     </div>
 
     <script>
-        async function extrairLinkFinal() {
+        async function detectarMediafireFinal() {
             const input = document.getElementById('urlInput');
             const url = input.value.trim();
             const resultado = document.getElementById('resultado');
 
             if (!url) {
-                resultado.innerHTML = '<p class="text-yellow-400 text-xl">Cole um link primeiro!</p>';
+                resultado.innerHTML = '<p class="text-yellow-400 text-2xl">Cole um link primeiro!</p>';
                 return;
             }
 
-            resultado.innerHTML = '<p class="text-emerald-400 text-xl animate-pulse">Buscando link final...</p>';
+            resultado.innerHTML = '<p class="text-emerald-400 text-2xl animate-pulse">Procurando APENAS link Mediafire final...</p>';
 
             try {
-                // Abre a página original em nova aba (pra você ver/clicar se precisar)
+                // Abre a página original pra você clicar se precisar
                 window.open(url, '_blank');
 
-                // Usa proxy grátis pra pegar o HTML (evita CORS)
+                // Proxy pra pegar HTML (evita bloqueio CORS)
                 const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-                const response = await fetch(proxy);
-                if (!response.ok) throw new Error('Não consegui carregar a página');
+                const res = await fetch(proxy);
+                if (!res.ok) throw new Error('Não consegui acessar a página');
 
-                const html = await response.text();
+                const html = await res.text();
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
 
-                let linkFinal = null;
-                const possiveis = [];
+                let linkMediafire = null;
 
-                // Procura TODOS os <a href> e filtra os mais prováveis
-                doc.querySelectorAll('a[href]').forEach(a => {
+                // Procura SOMENTE links que contenham mediafire.com (com https)
+                doc.querySelectorAll('a[href^="https://"]').forEach(a => {
                     const href = a.href;
-                    const texto = (a.textContent || a.innerText || '').toLowerCase().trim();
-
-                    if (href && href.startsWith('http') && 
-                        !href.includes('wileywales.com') && 
-                        !href.includes('eusoupet.com') && 
-                        !href.includes(window.location.hostname)) {
-
-                        // Prioridade alta: hosts de download comuns
-                        if (href.includes('mediafire.com') || 
-                            href.includes('mega.nz') || 
-                            href.includes('drive.google.com') || 
-                            href.includes('dropbox.com') || 
-                            href.includes('1fichier.com') ||
-                            texto.includes('download') || texto.includes('mediafire') || texto.includes('mega') ||
-                            texto.includes('clique aqui') || texto.includes('baixar') || texto.includes('continuar')) {
-                            linkFinal = href; // Achou um forte candidato → para aqui
-                            return;
-                        }
-
-                        // Senão, guarda como possível
-                        possiveis.push({ href, texto });
+                    if (href.includes('mediafire.com') && 
+                        (href.includes('/file/') || href.includes('/download/') || href.includes('/file'))) {  // padrões comuns do Mediafire
+                        linkMediafire = href;
                     }
                 });
 
-                // Se não achou prioridade alta, pega o primeiro externo razoável
-                if (!linkFinal && possiveis.length > 0) {
-                    linkFinal = possiveis[0].href;
-                }
-
-                if (linkFinal) {
+                if (linkMediafire) {
                     resultado.innerHTML = `
-                        <p class="text-2xl font-bold text-emerald-400 mb-4">✅ LINK FINAL ENCONTRADO!</p>
-                        <a href="${linkFinal}" target="_blank" class="block bg-gray-800 p-5 rounded-xl text-emerald-300 hover:text-emerald-200 break-all font-mono border border-emerald-600/50">
-                            ${linkFinal}
+                        <p class="text-3xl font-bold text-emerald-400 mb-6">✅ LINK MEDIAFIRE FINAL ENCONTRADO!</p>
+                        <a href="${linkMediafire}" target="_blank" class="block bg-gray-900 p-6 rounded-xl text-emerald-300 hover:text-white break-all font-mono text-xl border border-emerald-600/60 hover:border-emerald-400 transition">
+                            ${linkMediafire}
                         </a>
-                        <p class="mt-4 text-gray-300">Clique acima pra ir direto (ou use a aba que abri).</p>
+                        <p class="mt-6 text-gray-300">Esse é o link direto que a pessoa colocou no final. Clique pra baixar!</p>
                     `;
                 } else {
                     resultado.innerHTML = `
-                        <p class="text-2xl font-bold text-yellow-400 mb-4">Não encontrei link final automático 😕</p>
-                        <p class="text-lg">A página não mostra o link (provavelmente precisa clicar em anúncio ou ver vídeo primeiro).</p>
-                        <p class="mt-3 text-gray-400">Já abri a página em outra aba → procure por "Mediafire", "Download" ou botão verde lá.</p>
+                        <p class="text-3xl font-bold text-yellow-400 mb-6">Nenhum link Mediafire encontrado 😕</p>
+                        <p class="text-xl mb-4">Não tem https://www.mediafire.com/... visível no HTML inicial da página.</p>
+                        <p class="text-lg text-gray-400">Provavelmente o link final SÓ aparece DEPOIS de clicar no anúncio ou imagem grande ("CLIQUE NO ANÚNCIO").</p>
+                        <p class="mt-4 text-gray-300">Já abri a página em outra aba → clique na imagem/anúncio e veja se redireciona pro Mediafire ou outro site. Se for encadeado (ex: vai pra eusoupet.com primeiro), cole o novo link aqui depois.</p>
                     `;
                 }
 
             } catch (err) {
                 resultado.innerHTML = `
-                    <p class="text-2xl font-bold text-red-400 mb-4">Erro ao buscar</p>
-                    <p class="text-lg">Já abri o link em outra aba. Tente clicar manualmente no anúncio/vídeo.</p>
-                    <p class="text-sm mt-3 text-gray-500">Detalhe: ${err.message}</p>
+                    <p class="text-3xl font-bold text-red-400 mb-6">Erro ao verificar</p>
+                    <p class="text-xl">Já abri o link em outra aba. Tente clicar manualmente no anúncio.</p>
+                    <p class="text-sm mt-4 text-gray-500">Detalhe: ${err.message}</p>
                 `;
             }
         }
