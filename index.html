@@ -3,136 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bypass Master - Pule Qualquer Proteção</title>
+    <title>Bypass Master - Link Final Direto</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: linear-gradient(135deg, #0f172a, #1e2937); color: white; }
-        .hero { background: url('https://source.unsplash.com/random/1920x1080/?hacker') center/cover; }
+        body { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; }
+        .hero { background: url('https://source.unsplash.com/random/1920x1080/?cyber,hacker') center/cover; }
     </style>
 </head>
-<body class="min-h-screen font-sans">
-    <nav class="bg-black/80 backdrop-blur p-4">
+<body class="min-h-screen font-sans antialiased">
+    <nav class="bg-black/70 backdrop-blur-md p-4 sticky top-0 z-10">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-green-400">🚀 Bypass Master</h1>
-            <p class="text-sm text-gray-400">Para sites difíceis como WileyWales</p>
+            <h1 class="text-3xl font-bold text-emerald-400">Bypass Master 2.0</h1>
+            <p class="text-sm text-gray-400">Pega o link final de uma vez (WileyWales, Eusoupet...)</p>
         </div>
     </nav>
 
-    <div class="hero py-20 text-center">
-        <div class="max-w-3xl mx-auto px-6">
-            <h2 class="text-5xl font-bold mb-6">Pule proteções em 2 segundos</h2>
-            <p class="text-xl mb-8">Cole o link bloqueado (WileyWales, Eusoupet, Linkvertise, etc) e eu libero na hora!</p>
+    <div class="hero py-24 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight">Quero só o link final!</h2>
+            <p class="text-xl md:text-2xl mb-10 opacity-90">Cole o link protegido → clica → mostro o link que a pessoa realmente colocou no final.</p>
             
-            <div class="bg-white/10 backdrop-blur p-8 rounded-3xl shadow-2xl">
-                <input id="urlInput" type="text" placeholder="Cole aqui o link protegido (ex: https://wileywales.com/10262-2/)" 
-                       class="w-full p-5 rounded-2xl bg-black/70 text-white placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-green-500 text-lg mb-6">
-                <button onclick="bypassNow()" 
-                        class="w-full bg-green-500 hover:bg-green-600 text-black font-bold text-2xl py-6 rounded-2xl transition-all active:scale-95">
-                    BYPASS AGORA 🔥
+            <div class="bg-black/60 backdrop-blur-lg p-8 md:p-10 rounded-3xl shadow-2xl border border-emerald-500/30">
+                <input id="urlInput" type="url" placeholder="https://wileywales.com/10262-2/ ou qualquer encurtador chato" 
+                       class="w-full p-5 rounded-2xl bg-gray-900/80 text-white placeholder-gray-400 border border-gray-700 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/50 text-lg mb-6">
+                
+                <button onclick="getFinalLink()" 
+                        class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-black text-2xl py-7 rounded-2xl transition-all duration-300 active:scale-95 shadow-lg">
+                    BYPASS AGORA! → MOSTRAR LINK FINAL
                 </button>
             </div>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto px-6 py-16">
-        <div id="result" class="hidden bg-green-900/50 p-8 rounded-3xl text-center mb-12"></div>
-
-        <div class="grid md:grid-cols-2 gap-8">
-            <!-- Seção 1: Bypass Automático -->
-            <div class="bg-zinc-900 p-8 rounded-3xl">
-                <h3 class="text-2xl font-bold mb-4 flex items-center gap-3"><span class="text-4xl">⚡</span> Bypass Automático (Recomendado)</h3>
-                <p class="text-gray-300 mb-6">Instale o script mais poderoso de 2026 (funciona em +2000 sites difíceis brasileiros, incluindo WileyWales).</p>
-                <button onclick="installUniversal()" 
-                        class="w-full bg-white text-black font-bold py-5 rounded-2xl hover:bg-gray-200 text-xl">
-                    INSTALAR BYPASS ALL SHORTLINKS (1 CLIQUE)
-                </button>
-                <p class="text-xs text-gray-500 mt-4 text-center">Precisa do Tampermonkey (extensão grátis)</p>
-            </div>
-
-            <!-- Seção 2: Meu Script Custom -->
-            <div class="bg-zinc-900 p-8 rounded-3xl">
-                <h3 class="text-2xl font-bold mb-4 flex items-center gap-3"><span class="text-4xl">🛠️</span> Meu Script Custom</h3>
-                <p class="text-gray-300 mb-6">Script feito por mim pra WileyWales + Eusoupet (remove o "CLIQUE NO ANÚNCIO" automaticamente).</p>
-                <button onclick="copyCustomScript()" 
-                        class="w-full bg-amber-500 text-black font-bold py-5 rounded-2xl hover:bg-amber-600 text-xl">
-                    COPIAR MEU SCRIPT PERSONALIZADO
-                </button>
-            </div>
+    <div class="max-w-5xl mx-auto px-6 py-16">
+        <div id="result" class="hidden bg-gradient-to-br from-emerald-900/40 to-teal-900/40 p-10 rounded-3xl text-center border border-emerald-500/20 mb-12 backdrop-blur-sm">
+            <!-- Aqui aparece o resultado -->
         </div>
 
-        <div class="mt-12 text-center text-sm text-gray-400">
-            Sites suportados: WileyWales • Eusoupet • AdFly • Ouo • Linkvertise • ShrinkMe e +2000 outros<br>
-            Feito com ❤️ por Grok • Funciona offline • Sem anúncios
+        <div class="text-center text-sm text-gray-500 mt-20">
+            Funciona melhor em WileyWales, Eusoupet e similares que já mostram o link no HTML.<br>
+            Se não achar, abre a página normal e você clica manualmente (mas quase sempre acha!).
         </div>
     </div>
 
     <script>
-        function bypassNow() {
-            const url = document.getElementById('urlInput').value.trim();
+        async function getFinalLink() {
+            const input = document.getElementById('urlInput');
+            const url = input.value.trim();
+            const resultDiv = document.getElementById('result');
+
             if (!url) {
-                alert("Cole um link primeiro!");
+                alert("Cole um link primeiro, vai!");
                 return;
             }
-            
-            const result = document.getElementById('result');
-            result.classList.remove('hidden');
-            
-            if (url.includes('wileywales.com') || url.includes('eusoupet.com')) {
-                result.innerHTML = `
-                    <p class="text-green-400 text-2xl font-bold">✅ Site detectado! Abrindo + Bypass ativado...</p>
-                    <p class="mt-4 text-lg">O "CLIQUE NO ANÚNCIO" será pulado automaticamente se você instalar o script acima.</p>
+
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = `<p class="text-xl text-emerald-300 animate-pulse">Buscando o link final...</p>`;
+
+            try {
+                // Abre a página original em nova aba (como você queria)
+                window.open(url, '_blank');
+
+                // Tenta pegar o conteúdo e extrair link final
+                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+                const response = await fetch(proxyUrl);
+                
+                if (!response.ok) throw new Error("Não consegui acessar a página");
+
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Estratégias para achar o link final (prioridade alta → baixa)
+                let finalLink = null;
+
+                // 1. Procura <a> com texto tipo "DOWNLOAD", "CLIQUE AQUI", "CONTINUAR", "LINK"
+                const candidates = doc.querySelectorAll('a');
+                for (const a of candidates) {
+                    const text = (a.textContent || '').toLowerCase().trim();
+                    const href = a.href;
+                    if (!href) continue;
+
+                    if (
+                        text.includes('download') || 
+                        text.includes('clique aqui') || 
+                        text.includes('continuar') || 
+                        text.includes('link') || 
+                        text.includes('aqui') ||
+                        href.includes('http') && !href.includes('wileywales.com') && !href.includes('eusoupet.com')
+                    ) {
+                        finalLink = href;
+                        break;
+                    }
+                }
+
+                // 2. Se não achou, pega qualquer <a> externo que não seja do próprio site
+                if (!finalLink) {
+                    for (const a of candidates) {
+                        const href = a.href;
+                        if (href.startsWith('http') && 
+                            !href.includes(window.location.hostname) &&
+                            !href.includes('wileywales.com') &&
+                            !href.includes('eusoupet.com')) {
+                            finalLink = href;
+                            break;
+                        }
+                    }
+                }
+
+                // Mostra resultado
+                if (finalLink) {
+                    resultDiv.innerHTML = `
+                        <p class="text-3xl font-bold text-emerald-400 mb-6">✅ LINK FINAL ENCONTRADO!</p>
+                        <a href="${finalLink}" target="_blank" class="inline-block bg-black/50 hover:bg-black/70 text-emerald-300 font-mono p-5 rounded-2xl border border-emerald-500/40 break-all transition">
+                            ${finalLink}
+                        </a>
+                        <p class="mt-6 text-lg text-gray-300">Clique acima ou já abri a página original em outra aba.</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="text-2xl font-bold text-yellow-400 mb-4">Link final não detectado automaticamente 😕</p>
+                        <p class="text-lg">Mas já abri a página em outra aba pra você. Procure por "DOWNLOAD" ou "CLIQUE AQUI" lá.</p>
+                    `;
+                }
+
+            } catch (err) {
+                resultDiv.innerHTML = `
+                    <p class="text-2xl font-bold text-red-400 mb-4">Erro ao tentar extrair</p>
+                    <p class="text-lg">Já abri o link em outra aba. Tente clicar manualmente no botão/anúncio lá.</p>
+                    <p class="text-sm mt-4 text-gray-400">Erro: ${err.message}</p>
                 `;
-            } else {
-                result.innerHTML = `<p class="text-green-400 text-2xl font-bold">✅ Abrindo link...</p>`;
             }
-            
-            window.open(url, '_blank');
         }
-
-        function installUniversal() {
-            window.open('https://update.greasyfork.org/scripts/431691/Bypass%20All%20Shortlinks.user.js', '_blank');
-            alert("✅ Script aberto! Agora instale o Tampermonkey e clique em 'Instalar' na página.");
-        }
-
-        function copyCustomScript() {
-            const script = `// ==UserScript==
-// @name         Bypass Master - WileyWales & Eusoupet (by Grok)
-// @namespace    http://tampermonkey.net/
-// @version      1.0
-// @description  Remove bloqueio "CLIQUE NO ANÚNCIO" automaticamente
-// @author       Grok
-// @match        *://wileywales.com/*
-// @match        *://eusoupet.com/*
-// @grant        none
-// @run-at       document-idle
-// ==/UserScript==
-
-(function() {
-    'use strict';
-    setTimeout(() => {
-        // Remove mensagens de bloqueio
-        document.querySelectorAll('*').forEach(el => {
-            if (el.textContent && (el.textContent.includes('BLOQUEADO') || el.textContent.includes('CLIQUE NO ANÚNCIO'))) {
-                el.style.display = 'none';
-            }
-        });
-        
-        // Clica em todos os anúncios e botões possíveis
-        document.querySelectorAll('a, button, div, [onclick]').forEach(el => {
-            try { el.click(); } catch(e){}
-        });
-        
-        console.log('%c✅ Bypass Master ativado!', 'color: lime; font-size: 20px');
-        alert('Bypass ativado! O link deve estar liberado agora.');
-    }, 1500);
-})();`;
-            
-            navigator.clipboard.writeText(script);
-            alert("✅ Script copiado! Abra Tampermonkey → Novo Script → Cole → Salvar.");
-        }
-
-        // Tailwind init
-        tailwind.config = { content: ["*"], theme: { extend: {} } };
     </script>
 </body>
 </html>
